@@ -1,0 +1,30 @@
+package com.snapswap.ibancom.model
+
+case class BankValidationData(bic: Option[String],
+                              bank: Option[String],
+                              address: Option[String],
+                              zip: Option[String],
+                              city: Option[String],
+                              country: Option[String],
+                              countryIso: Option[String],
+                              phone: Option[String],
+                              fax: Option[String],
+                              email: Option[String],
+                              www: Option[String],
+                              account: Option[String])
+
+case class SortCodeValidationData(sortCode: Option[String],
+                                  account: Option[String],
+                                  iban: Option[String],
+                                  country: Option[String],
+                                  bankName: Option[String],
+                                  bankBic: Option[String],
+                                  bankAddress: Option[String],
+                                  bankCity: Option[String],
+                                  bankPostalcode: Option[String],
+                                  bankPhone: Option[String],
+                                  directDebits: Option[String],
+                                  pfsPayments: Option[String],
+                                  chaps: Option[String],
+                                  bacs: Option[String],
+                                  cccPayments: Option[String])
