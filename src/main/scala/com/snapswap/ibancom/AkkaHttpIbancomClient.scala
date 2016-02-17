@@ -42,7 +42,7 @@ class AkkaHttpIbancomClient(apiKey: String)
 
   private lazy val layerConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =
     Http()
-      .outgoingConnectionTls("www.iban.com", 443)
+      .outgoingConnectionHttps("www.iban.com", 443)
       .log("ibancom")
 
   private def http(request: HttpRequest): Future[HttpResponse] =
