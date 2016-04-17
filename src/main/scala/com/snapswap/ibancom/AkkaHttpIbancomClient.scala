@@ -28,7 +28,7 @@ class AkkaHttpIbancomClient(apiKey: String)
         case BankValidationData(_, Some(bank), _, _, _, _, Some(countryIso), _, _, _, _, _) =>
           IbanComResponse(iban, bank, countryIso)
         case other =>
-          throw IbanComException("Response from iban.com contains less information than need")
+          throw UnexpectedResponseException("Response from iban.com contains less information than need")
       }
 
   override def validate(account: String, sortCode: String): Future[IbanComResponse] =
@@ -37,7 +37,7 @@ class AkkaHttpIbancomClient(apiKey: String)
         case SortCodeValidationData(_, _, Some(iban), Some(countryIso), Some(bank), _, _, _, _, _, _, _, _, _, _) =>
           IbanComResponse(iban, bank, countryIso)
         case other =>
-          throw IbanComException("Response from iban.com contains less information than need")
+          throw UnexpectedResponseException("Response from iban.com contains less information than need")
       }
 
   private lazy val layerConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =

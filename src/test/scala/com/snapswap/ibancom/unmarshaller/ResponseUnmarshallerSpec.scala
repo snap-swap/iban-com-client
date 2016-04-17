@@ -1,7 +1,7 @@
 package com.snapswap.ibancom.unmarshaller
 
-import com.snapswap.ibancom.IbanComRequestException
-import com.snapswap.ibancom.model.{SortCodeValidationData, BankValidationData, IbancomError}
+import com.snapswap.ibancom.{IbanValidationException, InvalidRequestException}
+import com.snapswap.ibancom.model.{BankValidationData, SortCodeValidationData}
 import org.scalatest.{Matchers, WordSpecLike}
 
 class ResponseUnmarshallerSpec extends WordSpecLike with Matchers {
@@ -25,13 +25,29 @@ class ResponseUnmarshallerSpec extends WordSpecLike with Matchers {
         account = Some("0927353010")
       )
     }
+
+    "correct parse success bank validation response with success validations" in {
+      val result = ResponseUnmarshaller.parseValidateResponse(successResponseWithSuccessValidations)
+
+      result shouldBe a[BankValidationData]
+    }
+
     "correct handle errors in response" in {
-      val result = intercept[IbanComRequestException] {
+      val result = intercept[InvalidRequestException] {
         ResponseUnmarshaller.parseValidateResponse(errorsValidationResponse)
       }
 
-      result.errors shouldBe Seq(IbancomError("301", "API Key is invalid"))
+      result shouldBe InvalidRequestException(Seq("API Key is invalid"))
     }
+
+    "correct handle validation errors" in {
+      val result = intercept[IbanValidationException] {
+        ResponseUnmarshaller.parseValidateResponse(successsResponseWithValidationFailure)
+      }
+
+      result shouldBe a[IbanValidationException]
+    }
+
     "correct parse success sort code validation response" in {
       val result = ResponseUnmarshaller.parseValidateSortCodeResponse(successValidateSortCodeResponse)
 
@@ -68,10 +84,6 @@ class ResponseUnmarshallerSpec extends WordSpecLike with Matchers {
       |<account>0927353010</account>
       |</bank_data>
       |<validations>
-      |<check>
-      |<code>201</code>
-      |<message>Account Number check digit not correct</message>
-      |</check>
       |<check>
       |<code>001</code>
       |<message>IBAN Check digit is correct</message>
@@ -112,5 +124,89 @@ class ResponseUnmarshallerSpec extends WordSpecLike with Matchers {
       |<chaps>YES</chaps>
       |<bacs>YES</bacs>
       |<ccc_payments>NO</ccc_payments>
+      |</result>""".stripMargin
+
+  val successsResponseWithValidationFailure =
+    """<result>
+      |   <bank_data>
+      |      <bic>BILLLULL</bic>
+      |      <branch />
+      |      <bank>Banque Internationale à Luxembourg S.A.</bank>
+      |      <address>69 ROUTE D'ESCH</address>
+      |      <city>LUXEMBOURG</city>
+      |      <state />
+      |      <zip>2953</zip>
+      |      <phone />
+      |      <fax />
+      |      <www />
+      |      <email />
+      |      <country>Luxembourg</country>
+      |      <country_iso>LU</country_iso>
+      |      <account>521011775650</account>
+      |   </bank_data>
+      |   <sepa_data>
+      |      <SCT>YES</SCT>
+      |      <SDD>YES</SDD>
+      |      <COR1>NO</COR1>
+      |      <B2B>YES</B2B>
+      |      <SCC>NO</SCC>
+      |   </sepa_data>
+      |   <validations>
+      |      <check>
+      |         <code>202</code>
+      |         <message>IBAN Check digit not correct</message>
+      |      </check>
+      |      <check>
+      |         <code>205</code>
+      |         <message>IBAN structure is not correct</message>
+      |      </check>
+      |      <check>
+      |         <code>203</code>
+      |         <message>IBAN Length is not correct. Luxembourg IBAN must be 20 characters long.</message>
+      |      </check>
+      |   </validations>
+      |   <errors />
+      |</result>""".stripMargin
+
+  val successResponseWithSuccessValidations =
+    """<result>
+      |   <bank_data>
+      |      <bic>BILLLULL</bic>
+      |      <branch />
+      |      <bank>Banque Internationale à Luxembourg S.A.</bank>
+      |      <address>69 ROUTE D'ESCH</address>
+      |      <city>LUXEMBOURG</city>
+      |      <state />
+      |      <zip>2953</zip>
+      |      <phone />
+      |      <fax />
+      |      <www />
+      |      <email />
+      |      <country>Luxembourg</country>
+      |      <country_iso>LU</country_iso>
+      |      <account>5210117756500</account>
+      |   </bank_data>
+      |   <sepa_data>
+      |      <SCT>YES</SCT>
+      |      <SDD>YES</SDD>
+      |      <COR1>NO</COR1>
+      |      <B2B>YES</B2B>
+      |      <SCC>NO</SCC>
+      |   </sepa_data>
+      |   <validations>
+      |      <check>
+      |         <code>001</code>
+      |         <message>IBAN Check digit is correct</message>
+      |      </check>
+      |      <check>
+      |         <code>005</code>
+      |         <message>IBAN structure is correct</message>
+      |      </check>
+      |      <check>
+      |         <code>003</code>
+      |         <message>IBAN Length is correct</message>
+      |      </check>
+      |   </validations>
+      |   <errors />
       |</result>""".stripMargin
 }

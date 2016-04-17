@@ -1,9 +1,11 @@
 package com.snapswap.ibancom
 
-import com.snapswap.ibancom.model.IbancomError
-
 import scala.util.control.NoStackTrace
 
-case class IbanComException(message: String) extends NoStackTrace
+trait IbanComException extends NoStackTrace
 
-case class IbanComRequestException(errors: Seq[IbancomError]) extends NoStackTrace
+case class IbanValidationException(messages: Seq[String]) extends IbanComException
+
+case class InvalidRequestException(messages: Seq[String]) extends IbanComException
+
+case class UnexpectedResponseException(message: String) extends IbanComException

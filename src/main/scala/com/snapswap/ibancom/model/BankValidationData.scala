@@ -1,6 +1,6 @@
 package com.snapswap.ibancom.model
 
-case class BankValidationData(bic: Option[String],
+private[ibancom] case class BankValidationData(bic: Option[String],
                               bank: Option[String],
                               address: Option[String],
                               zip: Option[String],
@@ -13,7 +13,7 @@ case class BankValidationData(bic: Option[String],
                               www: Option[String],
                               account: Option[String])
 
-case class SortCodeValidationData(sortCode: Option[String],
+private[ibancom] case class SortCodeValidationData(sortCode: Option[String],
                                   account: Option[String],
                                   iban: Option[String],
                                   country: Option[String],
