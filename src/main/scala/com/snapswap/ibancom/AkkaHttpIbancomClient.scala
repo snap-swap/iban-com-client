@@ -26,7 +26,7 @@ class AkkaHttpIbancomClient(apiKey: String)
     send(get(s"/ibanv2.php?format=xml&api_key=$apiKey&iban=$iban"))(parseValidateResponse)
       .map {
         case BankValidationData(Some(bic), Some(bank), _, _, _, _, Some(countryIso), _, _, _, _, _) =>
-          IbanComResponse(bic, bank, countryIso)
+          IbanComResponse(bic, bank, countryIso, iban)
         case other =>
           throw UnexpectedResponseException("Response from iban.com contains less information than need")
       }
@@ -35,7 +35,7 @@ class AkkaHttpIbancomClient(apiKey: String)
     send(get(s"/sort-api.php?api_key=$apiKey&sortcode=$sortCode&account=$account"))(parseValidateSortCodeResponse)
       .map {
         case SortCodeValidationData(_, _, Some(iban), Some(countryIso), Some(bank), Some(bic), _, _, _, _, _, _, _, _, _) =>
-          IbanComResponse(bic, bank, countryIso)
+          IbanComResponse(bic, bank, countryIso, iban)
         case other =>
           throw UnexpectedResponseException("Response from iban.com contains less information than need")
       }
