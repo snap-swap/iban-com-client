@@ -12,7 +12,6 @@ import com.snapswap.ibancom.model.{BankValidationData, SortCodeValidationData}
 import com.snapswap.ibancom.unmarshaller.ResponseUnmarshaller
 
 import scala.concurrent.Future
-import scala.language.reflectiveCalls
 
 class AkkaHttpIbancomClient(apiKey: String)
                            (implicit system: ActorSystem, materializer: Materializer) extends IbanComClient with ResponseUnmarshaller {
