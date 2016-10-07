@@ -2,73 +2,71 @@ package com.snapswap.ibancom.unmarshaller
 
 import com.snapswap.ibancom.{IbanValidationException, InvalidRequestException}
 import com.snapswap.ibancom.model.{BankValidationData, SortCodeValidationData}
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, FlatSpec}
 
-class ResponseUnmarshallerSpec extends WordSpecLike with Matchers {
+class ResponseUnmarshallerSpec extends FlatSpec with Matchers {
 
-  "Validate response unmarshaller" should {
-    "correct parse success bank validation response" in {
-      val result = ResponseUnmarshaller.parseValidateResponse(successValidationResponse)
+  "ResponseUnmarshaller" should "correctly parse successful bank validation response" in {
+    val result = ResponseUnmarshaller.parseValidateResponse(successValidationResponse)
 
-      result shouldBe BankValidationData(
-        bic = Some("DEUTDEFFXXX"),
-        bank = Some("Deutsche Bank Filiale"),
-        address = Some("Theodor-Heuss-Allee 70"),
-        zip = Some("60254"),
-        city = Some("Frankfurt am Main"),
-        country = Some("Germany"),
-        countryIso = Some("DE"),
-        phone = None,
-        fax = None,
-        email = None,
-        www = None,
-        account = Some("0927353010")
-      )
+    result shouldBe BankValidationData(
+      bic = Some("DEUTDEFFXXX"),
+      bank = Some("Deutsche Bank Filiale"),
+      address = Some("Theodor-Heuss-Allee 70"),
+      zip = Some("60254"),
+      city = Some("Frankfurt am Main"),
+      country = Some("Germany"),
+      countryIso = Some("DE"),
+      phone = None,
+      fax = None,
+      email = None,
+      www = None,
+      account = Some("0927353010")
+    )
+  }
+
+  it should "correctly parse successful bank validation response with successful validations" in {
+    val result = ResponseUnmarshaller.parseValidateResponse(successResponseWithSuccessValidations)
+
+    result shouldBe a[BankValidationData]
+  }
+
+  it should "correctly handle errors in response" in {
+    val result = intercept[InvalidRequestException] {
+      ResponseUnmarshaller.parseValidateResponse(errorsValidationResponse)
     }
 
-    "correct parse success bank validation response with success validations" in {
-      val result = ResponseUnmarshaller.parseValidateResponse(successResponseWithSuccessValidations)
+    result shouldBe InvalidRequestException(Seq("API Key is invalid"))
+  }
 
-      result shouldBe a[BankValidationData]
+  it should "correctly handle validation errors" in {
+    val result = intercept[IbanValidationException] {
+      ResponseUnmarshaller.parseValidateResponse(successsResponseWithValidationFailure)
     }
 
-    "correct handle errors in response" in {
-      val result = intercept[InvalidRequestException] {
-        ResponseUnmarshaller.parseValidateResponse(errorsValidationResponse)
-      }
+    result shouldBe a[IbanValidationException]
+  }
 
-      result shouldBe InvalidRequestException(Seq("API Key is invalid"))
-    }
+  it should "correctly parse successful sort code in validation response" in {
+    val result = ResponseUnmarshaller.parseValidateSortCodeResponse(successValidateSortCodeResponse)
 
-    "correct handle validation errors" in {
-      val result = intercept[IbanValidationException] {
-        ResponseUnmarshaller.parseValidateResponse(successsResponseWithValidationFailure)
-      }
-
-      result shouldBe a[IbanValidationException]
-    }
-
-    "correct parse success sort code validation response" in {
-      val result = ResponseUnmarshaller.parseValidateSortCodeResponse(successValidateSortCodeResponse)
-
-      result shouldBe SortCodeValidationData(
-        sortCode = Some("200415"),
-        account = Some("38290008"),
-        iban = Some("GB37BARC20041538290008"),
-        country = Some("GB"),
-        bankName = Some("BARCLAYS BANK PLC"),
-        bankBic = Some("BARCGB22"),
-        bankAddress = Some("Dept AC Barclaycard House"),
-        bankCity = Some("Northampton"),
-        bankPostalcode = Some("NN4 7SG"),
-        bankPhone = Some("01604 234234"),
-        directDebits = Some("NO"),
-        pfsPayments = Some("YES"),
-        chaps = Some("YES"),
-        bacs = Some("YES"),
-        cccPayments = Some("NO")
-      )
-    }
+    result shouldBe SortCodeValidationData(
+      sortCode = Some("200415"),
+      account = Some("38290008"),
+      iban = Some("GB37BARC20041538290008"),
+      country = Some("GB"),
+      bankName = Some("BARCLAYS BANK PLC"),
+      bankBic = Some("BARCGB22"),
+      bankAddress = Some("Dept AC Barclaycard House"),
+      bankCity = Some("Northampton"),
+      bankPostalcode = Some("NN4 7SG"),
+      bankPhone = Some("01604 234234"),
+      directDebits = Some("NO"),
+      pfsPayments = Some("YES"),
+      chaps = Some("YES"),
+      bacs = Some("YES"),
+      cccPayments = Some("NO")
+    )
   }
 
   val successValidationResponse =
