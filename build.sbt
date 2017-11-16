@@ -2,7 +2,7 @@ name := "iban-com-client"
 
 organization := "com.snapswap"
 
-version := "1.0.1"
+version := "1.0.2"
 
 scalaVersion := "2.11.8"
 
@@ -26,9 +26,9 @@ scalacOptions := Seq(
 )
 
 libraryDependencies ++= {
-  val akkaV = "2.4.11"
+  val akkaHttpV = "10.0.10"
   Seq(
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaV,
+    "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
     "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
     "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   )
